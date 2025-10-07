@@ -8,13 +8,16 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        // Always show the login view at root; authentication/redirect happens on POST
-        // /login
-        return "login"; // resolves to /WEB-INF/views/login.jsp
+        return "login";
     }
 
     @GetMapping("/admin")
     public String admin() {
-        return "DashboardAdmin"; // Busca /WEB-INF/views/dashboardadmin.jsp
+        return "admin/dashboard"; // maps to /WEB-INF/views/admin/dashboard.jsp
+    }
+
+    @GetMapping("/admin/dashboard")
+    public String adminDashboard() {
+        return "admin/dashboard";
     }
 }
