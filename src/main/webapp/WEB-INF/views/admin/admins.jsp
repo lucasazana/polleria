@@ -13,7 +13,7 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Administradores</h1>
         <div>
-            <a href="${pageContext.request.contextPath}/admin/create" class="bg-blue-500 text-white px-3 py-1 rounded">Crear admin</a>
+            <a href="${pageContext.request.contextPath}/admin/crear" class="bg-blue-500 text-white px-3 py-1 rounded">Crear admin</a>
             <a href="${pageContext.request.contextPath}/admin" class="text-sm text-gray-600 ml-4">← Volver</a>
         </div>
     </div>
@@ -46,13 +46,13 @@
                         <c:otherwise>
                             <c:choose>
                                 <c:when test="${u.active}">
-                                    <a href="${pageContext.request.contextPath}/admin/users/${u.id}/edit" class="text-blue-600 mr-3">Editar</a>
-                                    <form method="post" action="${pageContext.request.contextPath}/admin/users/${u.id}/delete" style="display:inline" onsubmit="return confirm('Desactivar administrador?');">
+                                    <a href="${pageContext.request.contextPath}/admin/usuarios/${u.id}/editar" class="text-blue-600 mr-3">Editar</a>
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/usuarios/${u.id}/eliminar" style="display:inline" onsubmit="return confirm('Desactivar administrador?');">
                                         <button type="submit" class="text-red-600">Desactivar</button>
                                     </form>
                                 </c:when>
                                 <c:otherwise>
-                                    <form method="post" action="${pageContext.request.contextPath}/admin/users/${u.id}/reactivate" style="display:inline">
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/usuarios/${u.id}/reactivar" style="display:inline">
                                         <button type="submit" class="text-green-600">Reactivar</button>
                                     </form>
                                 </c:otherwise>

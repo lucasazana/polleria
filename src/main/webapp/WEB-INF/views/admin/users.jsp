@@ -13,7 +13,7 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">Gestión de Usuarios</h1>
         <div>
-            <a href="${pageContext.request.contextPath}/admin/users/create" class="bg-blue-500 text-white px-3 py-1 rounded">Crear usuario</a>
+            <a href="${pageContext.request.contextPath}/admin/usuarios/crear" class="bg-blue-500 text-white px-3 py-1 rounded">Crear usuario</a>
             <a href="${pageContext.request.contextPath}/admin" class="text-sm text-gray-600 ml-4">← Volver</a>
         </div>
     </div>
@@ -50,18 +50,18 @@
                 <td class="p-2">
                     <c:choose>
                         <c:when test="${u.username == 'admin'}">
-                            <span class="text-sm text-gray-500">Cuenta primaria (no editable)</span>
+                            <span class="text-sm text-gray-500">Cuenta primaria (no es posible editar)</span>
                         </c:when>
                         <c:otherwise>
                             <c:choose>
                                 <c:when test="${u.active}">
-                                    <a href="${pageContext.request.contextPath}/admin/users/${u.id}/edit" class="text-blue-600 mr-3">Editar</a>
-                                    <form method="post" action="${pageContext.request.contextPath}/admin/users/${u.id}/delete" style="display:inline" onsubmit="return confirm('Desactivar usuario?');">
+                                    <a href="${pageContext.request.contextPath}/admin/usuarios/${u.id}/editar" class="text-blue-600 mr-3">Editar</a>
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/usuarios/${u.id}/eliminar" style="display:inline" onsubmit="return confirm('Desactivar usuario?');">
                                         <button type="submit" class="text-red-600">Desactivar</button>
                                     </form>
                                 </c:when>
                                 <c:otherwise>
-                                    <form method="post" action="${pageContext.request.contextPath}/admin/users/${u.id}/reactivate" style="display:inline">
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/usuarios/${u.id}/reactivar" style="display:inline">
                                         <button type="submit" class="text-green-600">Reactivar</button>
                                     </form>
                                 </c:otherwise>

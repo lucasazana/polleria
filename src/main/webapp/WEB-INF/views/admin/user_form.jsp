@@ -12,7 +12,7 @@
 <div class="max-w-md mx-auto bg-white p-6 rounded shadow">
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl"><c:choose><c:when test="${not empty user}">Editar usuario</c:when><c:otherwise>Crear usuario</c:otherwise></c:choose></h1>
-        <a href="${pageContext.request.contextPath}/admin/users" class="text-sm text-gray-600">← Volver</a>
+        <a href="${pageContext.request.contextPath}/admin/usuarios" class="text-sm text-gray-600">← Volver</a>
     </div>
 
     <c:if test="${not empty error}">
@@ -24,7 +24,7 @@
 
     <c:choose>
         <c:when test="${not empty user}">
-            <form method="post" action="${pageContext.request.contextPath}/admin/users/${user.id}/edit" novalidate>
+            <form method="post" action="${pageContext.request.contextPath}/admin/usuarios/${user.id}/editar" novalidate>
                 <label for="username" class="block mb-2">Usuario</label>
                 <input id="username" name="username" value="${user.username}" class="w-full p-2 border mb-3" <c:if test="${user.username == 'admin'}">disabled</c:if> />
 
@@ -37,7 +37,7 @@
             </form>
         </c:when>
         <c:otherwise>
-            <form method="post" action="${pageContext.request.contextPath}/admin/users/create" novalidate>
+            <form method="post" action="${pageContext.request.contextPath}/admin/usuarios/crear" novalidate>
                 <label for="username" class="block mb-2">Usuario</label>
                 <input id="username" name="username" required minlength="3" class="w-full p-2 border mb-3" />
 

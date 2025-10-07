@@ -31,7 +31,7 @@ public class AuthController {
                 String r = role.toString();
                 if ("ADMIN".equalsIgnoreCase(r))
                     return "redirect:/admin/dashboard";
-                return "redirect:/employee/dashboard";
+                return "redirect:/user/dashboard";
             }
         }
         return "login";
@@ -55,7 +55,7 @@ public class AuthController {
 
         if ("ADMIN".equalsIgnoreCase(user.getRole()))
             return "redirect:/admin/dashboard";
-        return "redirect:/employee/dashboard";
+        return "redirect:/user/dashboard";
     }
 
     @GetMapping("/logout")

@@ -16,7 +16,7 @@ public class AuthInterceptor implements HandlerInterceptor {
                 response.sendRedirect(request.getContextPath() + "/login");
                 return false;
             }
-        } else if (uri.startsWith(request.getContextPath() + "/employee")) {
+        } else if (uri.startsWith(request.getContextPath() + "/user")) {
             if (role == null) {
                 response.sendRedirect(request.getContextPath() + "/login");
                 return false;

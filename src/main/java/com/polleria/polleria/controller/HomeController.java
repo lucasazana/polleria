@@ -10,14 +10,4 @@ public class HomeController {
     public String home() {
         return "login";
     }
-
-    @GetMapping("/admin")
-    public String admin() {
-        return "admin/dashboard"; // maps to /WEB-INF/views/admin/dashboard.jsp
-    }
-
-    @GetMapping("/admin/dashboard")
-    public String adminDashboard() {
-        return "admin/dashboard";
-    }
 }

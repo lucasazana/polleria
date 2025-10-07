@@ -20,11 +20,11 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    <t:card title="gestion de administradores" description="crear y administrar cuentas de administradores" link="${pageContext.request.contextPath}/admin/administrators" />
-    <t:card title="gestion de empleados" description="crear y administrar cuentas de empleados" link="${pageContext.request.contextPath}/admin/employees" />
-    <t:card title="gestion de inventario" description="control de stock y productos" link="${pageContext.request.contextPath}/admin/inventory" />
-    <t:card title="asistencia" description="registro de asistencia de empleados" link="${pageContext.request.contextPath}/admin/attendance" />
-    <t:card title="reportes" description="generar reportes de inventario y asistencia" link="${pageContext.request.contextPath}/admin/reports" />
+    <t:card title="gestion de administradores" description="crear y administrar cuentas de administradores" link="${pageContext.request.contextPath}/admin/administradores" />
+    <t:card title="gestion de empleados" description="crear y administrar cuentas de empleados" link="${pageContext.request.contextPath}/admin/empleados" />
+    <t:card title="gestion de inventario" description="control de stock y productos" link="${pageContext.request.contextPath}/admin/inventario" />
+    <t:card title="asistencia" description="registro de asistencia de empleados" link="${pageContext.request.contextPath}/admin/asistencia" />
+    <t:card title="reportes" description="generar reportes de inventario y asistencia" link="${pageContext.request.contextPath}/admin/reportes" />
     </div>
 
     <div class="mt-6">
