@@ -103,13 +103,13 @@ public class AdminController {
         return "admin/employee_form";
     }
 
-    // vista de inventario
+    // vista de inventario (redirige al nuevo dashboard)
     @GetMapping("/admin/inventario")
     public String inventory(HttpSession session) {
         if (!isAdminSession(session)) {
             return "redirect:/login";
         }
-        return "admin/inventory";
+        return "redirect:/admin/inventario/dashboard";
     }
 
     // vista de asistencia
