@@ -1,3 +1,4 @@
+
 package com.polleria.polleria.model;
 
 import jakarta.persistence.*;
@@ -5,11 +6,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "productos")
 public class Product {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -57,141 +63,6 @@ public class Product {
     // relacion uno a muchos con movimientos de inventario
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<InventoryMovement> movements;
-
-    // constructores
-    public Product() {
-    }
-
-    public Product(Category category, String nombre, String unidadMedida,
-            BigDecimal stockActual, BigDecimal stockMinimo, BigDecimal precioUnitario) {
-        this.category = category;
-        this.nombre = nombre;
-        this.unidadMedida = unidadMedida;
-        this.stockActual = stockActual;
-        this.stockMinimo = stockMinimo;
-        this.precioUnitario = precioUnitario;
-    }
-
-    // getters y setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getUnidadMedida() {
-        return unidadMedida;
-    }
-
-    public void setUnidadMedida(String unidadMedida) {
-        this.unidadMedida = unidadMedida;
-    }
-
-    public BigDecimal getStockActual() {
-        return stockActual;
-    }
-
-    public void setStockActual(BigDecimal stockActual) {
-        this.stockActual = stockActual;
-    }
-
-    public BigDecimal getStockMinimo() {
-        return stockMinimo;
-    }
-
-    public void setStockMinimo(BigDecimal stockMinimo) {
-        this.stockMinimo = stockMinimo;
-    }
-
-    public BigDecimal getPrecioUnitario() {
-        return precioUnitario;
-    }
-
-    public void setPrecioUnitario(BigDecimal precioUnitario) {
-        this.precioUnitario = precioUnitario;
-    }
-
-    public String getProveedor() {
-        return proveedor;
-    }
-
-    public void setProveedor(String proveedor) {
-        this.proveedor = proveedor;
-    }
-
-    public LocalDate getFechaCompra() {
-        return fechaCompra;
-    }
-
-    public void setFechaCompra(LocalDate fechaCompra) {
-        this.fechaCompra = fechaCompra;
-    }
-
-    public LocalDate getFechaVencimiento() {
-        return fechaVencimiento;
-    }
-
-    public void setFechaVencimiento(LocalDate fechaVencimiento) {
-        this.fechaVencimiento = fechaVencimiento;
-    }
-
-    public String getUbicacion() {
-        return ubicacion;
-    }
-
-    public void setUbicacion(String ubicacion) {
-        this.ubicacion = ubicacion;
-    }
-
-    public Boolean getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Boolean estado) {
-        this.estado = estado;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public List<InventoryMovement> getMovements() {
-        return movements;
-    }
-
-    public void setMovements(List<InventoryMovement> movements) {
-        this.movements = movements;
-    }
 
     // metodos de utilidad
     public boolean isActive() {

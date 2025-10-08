@@ -49,7 +49,9 @@ public class InventoryService {
     }
 
     public Category createCategory(String nombre, String descripcion) {
-        Category category = new Category(nombre, descripcion);
+        Category category = new Category();
+        category.setNombre(nombre);
+        category.setDescripcion(descripcion);
         return categoryRepository.save(category);
     }
 
@@ -89,7 +91,13 @@ public class InventoryService {
     public Product createProduct(Category category, String nombre, String unidadMedida,
             BigDecimal stockActual, BigDecimal stockMinimo, BigDecimal precioUnitario,
             String proveedor, LocalDate fechaCompra, LocalDate fechaVencimiento, String ubicacion) {
-        Product product = new Product(category, nombre, unidadMedida, stockActual, stockMinimo, precioUnitario);
+        Product product = new Product();
+        product.setCategory(category);
+        product.setNombre(nombre);
+        product.setUnidadMedida(unidadMedida);
+        product.setStockActual(stockActual);
+        product.setStockMinimo(stockMinimo);
+        product.setPrecioUnitario(precioUnitario);
         product.setProveedor(proveedor);
         product.setFechaCompra(fechaCompra);
         product.setFechaVencimiento(fechaVencimiento);
@@ -118,8 +126,14 @@ public class InventoryService {
     public InventoryMovement registerMovement(Product product, InventoryMovement.MovementType tipo,
             BigDecimal cantidad, BigDecimal stockAnterior, BigDecimal stockNuevo,
             String motivo, String usuarioResponsable) {
-        InventoryMovement movement = new InventoryMovement(product, tipo, cantidad, stockAnterior, stockNuevo, motivo,
-                usuarioResponsable);
+        InventoryMovement movement = new InventoryMovement();
+        movement.setProduct(product);
+        movement.setTipoMovimiento(tipo);
+        movement.setCantidad(cantidad);
+        movement.setStockAnterior(stockAnterior);
+        movement.setStockNuevo(stockNuevo);
+        movement.setMotivo(motivo);
+        movement.setUsuarioResponsable(usuarioResponsable);
         return movementRepository.save(movement);
     }
 

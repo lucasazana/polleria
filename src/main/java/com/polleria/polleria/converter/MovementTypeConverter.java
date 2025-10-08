@@ -12,7 +12,7 @@ public class MovementTypeConverter implements AttributeConverter<InventoryMoveme
         if (attribute == null) {
             return null;
         }
-        // Siempre guardar en mayúsculas en la base de datos
+        // guardar en mayusculas en la base de datos
         return attribute.name();
     }
 
@@ -22,11 +22,11 @@ public class MovementTypeConverter implements AttributeConverter<InventoryMoveme
             return null;
         }
 
-        // Usar nuestro método fromString que es tolerante
+        // usar metodo fromString
         try {
             return InventoryMovement.MovementType.fromString(dbData);
         } catch (IllegalArgumentException e) {
-            // Si falla, intentar con valueOf directo como fallback
+            // si falla intenta con valueof directo como fallback
             return InventoryMovement.MovementType.valueOf(dbData.toUpperCase());
         }
     }

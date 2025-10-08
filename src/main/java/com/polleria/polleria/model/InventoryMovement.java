@@ -1,14 +1,20 @@
+
 package com.polleria.polleria.model;
 
 import com.polleria.polleria.converter.MovementTypeConverter;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "movimientos_inventario")
 public class InventoryMovement {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -83,110 +89,6 @@ public class InventoryMovement {
                     throw new IllegalArgumentException("Unknown movement type: " + value);
             }
         }
-    }
-
-    // constructores
-    public InventoryMovement() {
-    }
-
-    public InventoryMovement(Product product, MovementType tipoMovimiento, BigDecimal cantidad,
-            BigDecimal stockAnterior, BigDecimal stockNuevo, String motivo, String usuarioResponsable) {
-        this.product = product;
-        this.tipoMovimiento = tipoMovimiento;
-        this.cantidad = cantidad;
-        this.stockAnterior = stockAnterior;
-        this.stockNuevo = stockNuevo;
-        this.motivo = motivo;
-        this.usuarioResponsable = usuarioResponsable;
-    }
-
-    // getters y setters
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public MovementType getTipoMovimiento() {
-        return tipoMovimiento;
-    }
-
-    public void setTipoMovimiento(MovementType tipoMovimiento) {
-        this.tipoMovimiento = tipoMovimiento;
-    }
-
-    public BigDecimal getCantidad() {
-        return cantidad;
-    }
-
-    public void setCantidad(BigDecimal cantidad) {
-        this.cantidad = cantidad;
-    }
-
-    public BigDecimal getStockAnterior() {
-        return stockAnterior;
-    }
-
-    public void setStockAnterior(BigDecimal stockAnterior) {
-        this.stockAnterior = stockAnterior;
-    }
-
-    public BigDecimal getStockNuevo() {
-        return stockNuevo;
-    }
-
-    public void setStockNuevo(BigDecimal stockNuevo) {
-        this.stockNuevo = stockNuevo;
-    }
-
-    public String getMotivo() {
-        return motivo;
-    }
-
-    public void setMotivo(String motivo) {
-        this.motivo = motivo;
-    }
-
-    public String getUsuarioResponsable() {
-        return usuarioResponsable;
-    }
-
-    public void setUsuarioResponsable(String usuarioResponsable) {
-        this.usuarioResponsable = usuarioResponsable;
-    }
-
-    public LocalDateTime getFechaMovimiento() {
-        return fechaMovimiento;
-    }
-
-    public void setFechaMovimiento(LocalDateTime fechaMovimiento) {
-        this.fechaMovimiento = fechaMovimiento;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     // metodos de utilidad
