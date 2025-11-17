@@ -15,7 +15,76 @@
         <a href="${pageContext.request.contextPath}/admin" class="text-sm text-gray-600">← Volver al dashboard</a>
     </div>
 
-    <p class="text-sm text-gray-600">Placeholder para registro de asistencia.</p>
+    <div class="mb-6">
+        <h2 class="text-lg font-semibold mb-2">Asistencia de empleados - ${fechaHoy}</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border rounded">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border">Empleado</th>
+                        <th class="px-4 py-2 border">Entrada</th>
+                        <th class="px-4 py-2 border">Refrigerio</th>
+                        <th class="px-4 py-2 border">Salida</th>
+                        <th class="px-4 py-2 border">Observaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="empleado" items="${empleados}">
+                        <c:set var="asistenciaEncontrada" value="" />
+                        <c:forEach var="a" items="${asistencias}">
+                            <c:if test="${a.empleado.id == empleado.id}">
+                                <c:set var="asistenciaEncontrada" value="${a}" scope="page" />
+                            </c:if>
+                        </c:forEach>
+                        <tr>
+                            <td class="px-4 py-2 border">${empleado.username}</td>
+                            <td class="px-4 py-2 border">
+                                <c:choose>
+                                    <c:when test="${not empty asistenciaEncontrada && asistenciaEncontrada.horaEntrada != null}">
+                                        ${asistenciaEncontrada.horaEntrada}
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="text-gray-400">No registrada</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="px-4 py-2 border">
+                                <c:choose>
+                                    <c:when test="${not empty asistenciaEncontrada && asistenciaEncontrada.horaRefrigerio != null}">
+                                        ${asistenciaEncontrada.horaRefrigerio}
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="text-gray-400">No registrada</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="px-4 py-2 border">
+                                <c:choose>
+                                    <c:when test="${not empty asistenciaEncontrada && asistenciaEncontrada.horaSalida != null}">
+                                        ${asistenciaEncontrada.horaSalida}
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="text-gray-400">No registrada</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class="px-4 py-2 border">
+                                <c:choose>
+                                    <c:when test="${not empty asistenciaEncontrada && asistenciaEncontrada.observaciones != null}">
+                                        ${asistenciaEncontrada.observaciones}
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="text-gray-400">-</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 </body>
 </html>

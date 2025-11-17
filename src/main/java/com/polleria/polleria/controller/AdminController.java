@@ -1,22 +1,120 @@
+
 package com.polleria.polleria.controller;
 
+
 import com.polleria.polleria.service.AuthService;
+import com.polleria.polleria.repository.AttendanceRepository;
+import com.polleria.polleria.repository.UserRepository;
+import com.polleria.polleria.model.Attendance;
+import com.polleria.polleria.model.User;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import jakarta.servlet.http.HttpSession;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Cell;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 public class AdminController {
 
-    private final AuthService authService;
+    // Exporta el reporte de asistencia filtrado a PDF
+    @GetMapping("/admin/reportes/asistencia/pdf")
+    public void exportarAsistenciaPdf(
+            @RequestParam(value = "empleadoId", required = false) Integer empleadoId,
+            @RequestParam(value = "desde", required = false) String desdeStr,
+            @RequestParam(value = "hasta", required = false) String hastaStr,
+            HttpServletResponse response) throws Exception {
+        List<Attendance> asistencias;
+        java.time.LocalDate desde = null;
+        java.time.LocalDate hasta = null;
+        if (desdeStr != null && !desdeStr.isBlank()) {
+            desde = java.time.LocalDate.parse(desdeStr);
+        }
+        if (hastaStr != null && !hastaStr.isBlank()) {
+            hasta = java.time.LocalDate.parse(hastaStr);
+        }
+        if (empleadoId != null && desde != null && hasta != null) {
+            User empleado = userRepository.findById(empleadoId).orElse(null);
+            asistencias = (empleado != null) ? attendanceRepository.findAllByEmpleadoAndFechaBetween(empleado, desde, hasta) : java.util.Collections.emptyList();
+        } else if (desde != null && hasta != null) {
+            asistencias = attendanceRepository.findAllByFechaBetween(desde, hasta);
+        } else {
+            asistencias = java.util.Collections.emptyList();
+        }
 
-    public AdminController(AuthService authService) {
+        response.setContentType("application/pdf");
+        String fechaHoy = java.time.LocalDate.now().toString();
+        String nombreArchivo = "asistencias_";
+        if (empleadoId != null) {
+            User empleado = userRepository.findById(empleadoId).orElse(null);
+            if (empleado != null) {
+                nombreArchivo += empleado.getUsername() + "_";
+            }
+        }
+        nombreArchivo += fechaHoy + ".pdf";
+        response.setHeader("Content-Disposition", "attachment; filename=" + nombreArchivo);
+        PdfWriter writer = new PdfWriter(response.getOutputStream());
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+
+        // Título centrado y grande
+        Paragraph titulo = new Paragraph("Reporte de Asistencias")
+                .setFontSize(18)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(10);
+        document.add(titulo);
+
+    // Fecha de generación
+    Paragraph fecha = new Paragraph("Generado el: " + fechaHoy)
+        .setFontSize(10)
+        .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.RIGHT)
+        .setMarginBottom(15);
+    document.add(fecha);
+
+        float[] columnWidths = {120, 80, 80, 80, 80, 150};
+        Table table = new Table(columnWidths);
+        // Encabezados con fondo gris y texto blanco
+        String[] headers = {"Empleado", "Fecha", "Entrada", "Refrigerio", "Salida", "Observaciones"};
+        for (String h : headers) {
+            Cell cell = new Cell().add(new Paragraph(h).setBold().setFontColor(com.itextpdf.kernel.colors.ColorConstants.WHITE));
+            cell.setBackgroundColor(com.itextpdf.kernel.colors.ColorConstants.DARK_GRAY);
+            cell.setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER);
+            cell.setBorder(new com.itextpdf.layout.borders.SolidBorder(1));
+            table.addHeaderCell(cell);
+        }
+        // Filas de datos
+        for (Attendance a : asistencias) {
+            table.addCell(new Cell().add(new Paragraph(a.getEmpleado().getUsername())).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(new Cell().add(new Paragraph(a.getFecha() != null ? a.getFecha().toString() : "")).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(new Cell().add(new Paragraph(a.getHoraEntrada() != null ? a.getHoraEntrada().toString() : "")).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(new Cell().add(new Paragraph(a.getHoraRefrigerio() != null ? a.getHoraRefrigerio().toString() : "")).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(new Cell().add(new Paragraph(a.getHoraSalida() != null ? a.getHoraSalida().toString() : "")).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(new Cell().add(new Paragraph(a.getObservaciones() != null ? a.getObservaciones() : "")).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+        }
+        table.setMarginTop(10);
+        document.add(table);
+        document.close();
+    }
+
+    private final AuthService authService;
+    private final AttendanceRepository attendanceRepository;
+    private final UserRepository userRepository;
+
+    public AdminController(AuthService authService, AttendanceRepository attendanceRepository, UserRepository userRepository) {
         this.authService = authService;
+        this.attendanceRepository = attendanceRepository;
+        this.userRepository = userRepository;
     }
 
     // verifica si la sesion actual pertenece a un admin
@@ -114,10 +212,16 @@ public class AdminController {
 
     // vista de asistencia
     @GetMapping("/admin/asistencia")
-    public String attendance(HttpSession session) {
+    public String attendance(HttpSession session, Model model) {
         if (!isAdminSession(session)) {
             return "redirect:/login";
         }
+        LocalDate hoy = LocalDate.now();
+        List<User> empleados = userRepository.findByRole("USER");
+        List<Attendance> asistencias = attendanceRepository.findAllByFecha(hoy);
+        model.addAttribute("empleados", empleados);
+        model.addAttribute("asistencias", asistencias);
+        model.addAttribute("fechaHoy", hoy);
         return "admin/attendance";
     }
 
@@ -128,6 +232,39 @@ public class AdminController {
             return "redirect:/login";
         }
         return "admin/reports";
+    }
+
+    // Reportes de asistencia
+    @GetMapping("/admin/reportes/asistencia")
+    public String reportesAsistencia(
+            @RequestParam(value = "empleadoId", required = false) Integer empleadoId,
+            @RequestParam(value = "desde", required = false) String desdeStr,
+            @RequestParam(value = "hasta", required = false) String hastaStr,
+            org.springframework.ui.Model model) {
+        List<User> empleados = userRepository.findByRole("USER");
+        List<Attendance> asistencias;
+        java.time.LocalDate desde = null;
+        java.time.LocalDate hasta = null;
+        if (desdeStr != null && !desdeStr.isBlank()) {
+            desde = java.time.LocalDate.parse(desdeStr);
+        }
+        if (hastaStr != null && !hastaStr.isBlank()) {
+            hasta = java.time.LocalDate.parse(hastaStr);
+        }
+        if (empleadoId != null && desde != null && hasta != null) {
+            User empleado = userRepository.findById(empleadoId).orElse(null);
+            asistencias = (empleado != null) ? attendanceRepository.findAllByEmpleadoAndFechaBetween(empleado, desde, hasta) : java.util.Collections.emptyList();
+        } else if (desde != null && hasta != null) {
+            asistencias = attendanceRepository.findAllByFechaBetween(desde, hasta);
+        } else {
+            asistencias = java.util.Collections.emptyList();
+        }
+        model.addAttribute("empleados", empleados);
+        model.addAttribute("asistencias", asistencias);
+        model.addAttribute("empleadoId", empleadoId);
+        model.addAttribute("desde", desdeStr);
+        model.addAttribute("hasta", hastaStr);
+        return "admin/reportes_asistencia";
     }
 
     // procesa la creacion de un nuevo empleado

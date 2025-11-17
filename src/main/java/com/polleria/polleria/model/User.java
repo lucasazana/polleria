@@ -1,4 +1,3 @@
-
 package com.polleria.polleria.model;
 
 import jakarta.persistence.*;
@@ -31,4 +30,12 @@ public class User {
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Lob
+    @Column(name = "foto_perfil")
+    private byte[] fotoPerfil;
+
+    // Campo temporal para migración de fotos
+    @Column(name = "foto_perfil_path")
+    private String fotoPerfilPath;
 }
