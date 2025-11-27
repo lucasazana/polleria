@@ -18,7 +18,7 @@
         <h1 class="text-3xl font-bold text-gray-800">Dashboard de Inventario</h1>
         <div>
             <span class="text-sm text-gray-600 mr-4">Usuario: <strong>${sessionScope.username}</strong></span>
-            <a href="${pageContext.request.contextPath}/admin/inventario" class="text-blue-600 hover:underline">← Volver a inventario</a>
+            <a href="${pageContext.request.contextPath}/admin/dashboard" class="text-gray-600 hover:text-gray-800 hover:underline">← Volver al panel</a>
         </div>
     </div>
 

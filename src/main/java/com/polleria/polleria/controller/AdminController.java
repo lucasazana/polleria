@@ -1,13 +1,19 @@
 
 package com.polleria.polleria.controller;
 
-
 import com.polleria.polleria.service.AuthService;
+import com.polleria.polleria.service.InventoryService;
 import com.polleria.polleria.repository.AttendanceRepository;
 import com.polleria.polleria.repository.UserRepository;
+import com.polleria.polleria.repository.InventoryMovementRepository;
 import com.polleria.polleria.model.Attendance;
 import com.polleria.polleria.model.User;
+import com.polleria.polleria.model.Product;
+import com.polleria.polleria.model.Category;
+import com.polleria.polleria.model.InventoryMovement;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,7 +51,9 @@ public class AdminController {
         }
         if (empleadoId != null && desde != null && hasta != null) {
             User empleado = userRepository.findById(empleadoId).orElse(null);
-            asistencias = (empleado != null) ? attendanceRepository.findAllByEmpleadoAndFechaBetween(empleado, desde, hasta) : java.util.Collections.emptyList();
+            asistencias = (empleado != null)
+                    ? attendanceRepository.findAllByEmpleadoAndFechaBetween(empleado, desde, hasta)
+                    : java.util.Collections.emptyList();
         } else if (desde != null && hasta != null) {
             asistencias = attendanceRepository.findAllByFechaBetween(desde, hasta);
         } else {
@@ -75,19 +83,20 @@ public class AdminController {
                 .setMarginBottom(10);
         document.add(titulo);
 
-    // Fecha de generación
-    Paragraph fecha = new Paragraph("Generado el: " + fechaHoy)
-        .setFontSize(10)
-        .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.RIGHT)
-        .setMarginBottom(15);
-    document.add(fecha);
+        // Fecha de generación
+        Paragraph fecha = new Paragraph("Generado el: " + fechaHoy)
+                .setFontSize(10)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.RIGHT)
+                .setMarginBottom(15);
+        document.add(fecha);
 
-        float[] columnWidths = {120, 80, 80, 80, 80, 150};
+        float[] columnWidths = { 120, 80, 80, 80, 80, 150 };
         Table table = new Table(columnWidths);
         // Encabezados con fondo gris y texto blanco
-        String[] headers = {"Empleado", "Fecha", "Entrada", "Refrigerio", "Salida", "Observaciones"};
+        String[] headers = { "Empleado", "Fecha", "Entrada", "Refrigerio", "Salida", "Observaciones" };
         for (String h : headers) {
-            Cell cell = new Cell().add(new Paragraph(h).setBold().setFontColor(com.itextpdf.kernel.colors.ColorConstants.WHITE));
+            Cell cell = new Cell()
+                    .add(new Paragraph(h).setBold().setFontColor(com.itextpdf.kernel.colors.ColorConstants.WHITE));
             cell.setBackgroundColor(com.itextpdf.kernel.colors.ColorConstants.DARK_GRAY);
             cell.setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER);
             cell.setBorder(new com.itextpdf.layout.borders.SolidBorder(1));
@@ -95,12 +104,19 @@ public class AdminController {
         }
         // Filas de datos
         for (Attendance a : asistencias) {
-            table.addCell(new Cell().add(new Paragraph(a.getEmpleado().getUsername())).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
-            table.addCell(new Cell().add(new Paragraph(a.getFecha() != null ? a.getFecha().toString() : "")).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
-            table.addCell(new Cell().add(new Paragraph(a.getHoraEntrada() != null ? a.getHoraEntrada().toString() : "")).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
-            table.addCell(new Cell().add(new Paragraph(a.getHoraRefrigerio() != null ? a.getHoraRefrigerio().toString() : "")).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
-            table.addCell(new Cell().add(new Paragraph(a.getHoraSalida() != null ? a.getHoraSalida().toString() : "")).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
-            table.addCell(new Cell().add(new Paragraph(a.getObservaciones() != null ? a.getObservaciones() : "")).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(new Cell().add(new Paragraph(a.getEmpleado().getUsername()))
+                    .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(new Cell().add(new Paragraph(a.getFecha() != null ? a.getFecha().toString() : ""))
+                    .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(new Cell().add(new Paragraph(a.getHoraEntrada() != null ? a.getHoraEntrada().toString() : ""))
+                    .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(
+                    new Cell().add(new Paragraph(a.getHoraRefrigerio() != null ? a.getHoraRefrigerio().toString() : ""))
+                            .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(new Cell().add(new Paragraph(a.getHoraSalida() != null ? a.getHoraSalida().toString() : ""))
+                    .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            table.addCell(new Cell().add(new Paragraph(a.getObservaciones() != null ? a.getObservaciones() : ""))
+                    .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
         }
         table.setMarginTop(10);
         document.add(table);
@@ -110,11 +126,17 @@ public class AdminController {
     private final AuthService authService;
     private final AttendanceRepository attendanceRepository;
     private final UserRepository userRepository;
+    private final InventoryService inventoryService;
+    private final InventoryMovementRepository movementRepository;
 
-    public AdminController(AuthService authService, AttendanceRepository attendanceRepository, UserRepository userRepository) {
+    public AdminController(AuthService authService, AttendanceRepository attendanceRepository,
+            UserRepository userRepository, InventoryService inventoryService,
+            InventoryMovementRepository movementRepository) {
         this.authService = authService;
         this.attendanceRepository = attendanceRepository;
         this.userRepository = userRepository;
+        this.inventoryService = inventoryService;
+        this.movementRepository = movementRepository;
     }
 
     // verifica si la sesion actual pertenece a un admin
@@ -234,6 +256,236 @@ public class AdminController {
         return "admin/reports";
     }
 
+    // Reportes de inventario - Vista
+    @GetMapping("/admin/reportes/inventario")
+    public String reportesInventario(
+            @RequestParam(value = "tipoReporte", required = false, defaultValue = "productos") String tipoReporte,
+            @RequestParam(value = "categoriaId", required = false) Integer categoriaId,
+            @RequestParam(value = "desde", required = false) String desdeStr,
+            @RequestParam(value = "hasta", required = false) String hastaStr,
+            HttpSession session, Model model) {
+        if (!isAdminSession(session)) {
+            return "redirect:/login";
+        }
+
+        // Obtener categorías para el filtro
+        List<Category> categorias = inventoryService.getAllActiveCategories();
+        model.addAttribute("categorias", categorias);
+        model.addAttribute("tipoReporte", tipoReporte);
+        model.addAttribute("categoriaId", categoriaId);
+        model.addAttribute("desde", desdeStr);
+        model.addAttribute("hasta", hastaStr);
+
+        // Estadísticas generales
+        model.addAttribute("totalProductos", inventoryService.getActiveProductsCount());
+        model.addAttribute("productosStockBajo", inventoryService.getLowStockProductsCount());
+        model.addAttribute("productosPorVencer", inventoryService.getProductsExpiringInDaysCount(30));
+        model.addAttribute("valorTotal", inventoryService.getTotalInventoryValue());
+
+        // Obtener datos según el tipo de reporte
+        List<Product> productos = null;
+        List<InventoryMovement> movimientos = null;
+
+        switch (tipoReporte) {
+            case "stockBajo":
+                productos = inventoryService.getProductsWithLowStock();
+                break;
+            case "porVencer":
+                productos = inventoryService.getProductsExpiringBefore(LocalDate.now().plusDays(30));
+                break;
+            case "movimientos":
+                if (desdeStr != null && !desdeStr.isBlank() && hastaStr != null && !hastaStr.isBlank()) {
+                    LocalDateTime desde = LocalDate.parse(desdeStr).atStartOfDay();
+                    LocalDateTime hasta = LocalDate.parse(hastaStr).atTime(23, 59, 59);
+                    movimientos = movementRepository.findMovementsByDateRange(desde, hasta);
+                }
+                break;
+            default: // productos
+                if (categoriaId != null) {
+                    productos = inventoryService.getProductsByCategory(categoriaId);
+                } else {
+                    productos = inventoryService.getAllActiveProducts();
+                }
+                break;
+        }
+
+        model.addAttribute("productos", productos);
+        model.addAttribute("movimientos", movimientos);
+
+        return "admin/reportes_inventario";
+    }
+
+    // Exportar reporte de inventario a PDF
+    @GetMapping("/admin/reportes/inventario/pdf")
+    public void exportarInventarioPdf(
+            @RequestParam(value = "tipoReporte", required = false, defaultValue = "productos") String tipoReporte,
+            @RequestParam(value = "categoriaId", required = false) Integer categoriaId,
+            @RequestParam(value = "desde", required = false) String desdeStr,
+            @RequestParam(value = "hasta", required = false) String hastaStr,
+            HttpServletResponse response) throws Exception {
+
+        // Obtener datos según el tipo de reporte
+        List<Product> productos = null;
+        List<InventoryMovement> movimientos = null;
+
+        switch (tipoReporte) {
+            case "stockBajo":
+                productos = inventoryService.getProductsWithLowStock();
+                break;
+            case "porVencer":
+                productos = inventoryService.getProductsExpiringBefore(LocalDate.now().plusDays(30));
+                break;
+            case "movimientos":
+                if (desdeStr != null && !desdeStr.isBlank() && hastaStr != null && !hastaStr.isBlank()) {
+                    LocalDateTime desde = LocalDate.parse(desdeStr).atStartOfDay();
+                    LocalDateTime hasta = LocalDate.parse(hastaStr).atTime(23, 59, 59);
+                    movimientos = movementRepository.findMovementsByDateRange(desde, hasta);
+                }
+                break;
+            default:
+                if (categoriaId != null) {
+                    productos = inventoryService.getProductsByCategory(categoriaId);
+                } else {
+                    productos = inventoryService.getAllActiveProducts();
+                }
+                break;
+        }
+
+        // Configurar respuesta HTTP
+        response.setContentType("application/pdf");
+        String fechaHoy = LocalDate.now().toString();
+        String nombreArchivo = "inventario_" + tipoReporte + "_" + fechaHoy + ".pdf";
+        response.setHeader("Content-Disposition", "attachment; filename=" + nombreArchivo);
+
+        // Crear documento PDF
+        PdfWriter writer = new PdfWriter(response.getOutputStream());
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+
+        // Título
+        String titulo = "Reporte de Inventario";
+        switch (tipoReporte) {
+            case "stockBajo":
+                titulo = "Productos con Stock Bajo";
+                break;
+            case "porVencer":
+                titulo = "Productos por Vencer";
+                break;
+            case "movimientos":
+                titulo = "Movimientos de Inventario";
+                break;
+            default:
+                titulo = "Listado de Productos";
+                break;
+        }
+
+        Paragraph tituloP = new Paragraph(titulo)
+                .setFontSize(18)
+                .setBold()
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER)
+                .setMarginBottom(10);
+        document.add(tituloP);
+
+        // Fecha de generación
+        Paragraph fecha = new Paragraph("Generado el: " + fechaHoy)
+                .setFontSize(10)
+                .setTextAlignment(com.itextpdf.layout.properties.TextAlignment.RIGHT)
+                .setMarginBottom(15);
+        document.add(fecha);
+
+        if ("movimientos".equals(tipoReporte) && movimientos != null) {
+            // Tabla de movimientos
+            float[] columnWidths = { 80, 100, 60, 50, 60, 60, 100, 70 };
+            Table table = new Table(columnWidths);
+
+            String[] headers = { "Fecha", "Producto", "Tipo", "Cantidad", "Stock Ant.", "Stock Nuevo", "Motivo",
+                    "Usuario" };
+            for (String h : headers) {
+                Cell cell = new Cell().add(new Paragraph(h).setBold()
+                        .setFontColor(com.itextpdf.kernel.colors.ColorConstants.WHITE).setFontSize(9));
+                cell.setBackgroundColor(com.itextpdf.kernel.colors.ColorConstants.DARK_GRAY);
+                cell.setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER);
+                cell.setBorder(new com.itextpdf.layout.borders.SolidBorder(1));
+                table.addHeaderCell(cell);
+            }
+
+            for (InventoryMovement m : movimientos) {
+                table.addCell(new Cell().add(new Paragraph(
+                        m.getFechaMovimiento() != null ? m.getFechaMovimiento().toLocalDate().toString() : "")
+                        .setFontSize(8)).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(new Cell().add(new Paragraph(m.getProduct().getNombre()).setFontSize(8))
+                        .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(new Cell().add(new Paragraph(m.getTipoMovimiento().toString()).setFontSize(8))
+                        .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(new Cell().add(new Paragraph(m.getCantidad().toString()).setFontSize(8))
+                        .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(new Cell().add(new Paragraph(m.getStockAnterior().toString()).setFontSize(8))
+                        .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(new Cell().add(new Paragraph(m.getStockNuevo().toString()).setFontSize(8))
+                        .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(new Cell().add(new Paragraph(m.getMotivo() != null ? m.getMotivo() : "").setFontSize(8))
+                        .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(
+                        new Cell().add(new Paragraph(m.getUsuarioResponsable() != null ? m.getUsuarioResponsable() : "")
+                                .setFontSize(8)).setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            }
+            document.add(table);
+        } else if (productos != null) {
+            // Tabla de productos
+            float[] columnWidths = { 120, 80, 60, 60, 70, 70, 80 };
+            Table table = new Table(columnWidths);
+
+            String[] headers = { "Producto", "Categoría", "Stock", "Mínimo", "Precio", "Vencimiento", "Ubicación" };
+            for (String h : headers) {
+                Cell cell = new Cell().add(new Paragraph(h).setBold()
+                        .setFontColor(com.itextpdf.kernel.colors.ColorConstants.WHITE).setFontSize(9));
+                cell.setBackgroundColor(com.itextpdf.kernel.colors.ColorConstants.DARK_GRAY);
+                cell.setTextAlignment(com.itextpdf.layout.properties.TextAlignment.CENTER);
+                cell.setBorder(new com.itextpdf.layout.borders.SolidBorder(1));
+                table.addHeaderCell(cell);
+            }
+
+            for (Product p : productos) {
+                // Resaltar productos con stock bajo
+                boolean stockBajo = p.getStockActual().compareTo(p.getStockMinimo()) <= 0;
+
+                Cell cellNombre = new Cell().add(new Paragraph(p.getNombre()).setFontSize(8))
+                        .setBorder(new com.itextpdf.layout.borders.SolidBorder(1));
+                if (stockBajo)
+                    cellNombre.setBackgroundColor(com.itextpdf.kernel.colors.ColorConstants.LIGHT_GRAY);
+                table.addCell(cellNombre);
+
+                table.addCell(new Cell()
+                        .add(new Paragraph(p.getCategory() != null ? p.getCategory().getNombre() : "").setFontSize(8))
+                        .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(
+                        new Cell().add(new Paragraph(p.getStockActual() + " " + p.getUnidadMedida()).setFontSize(8))
+                                .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(
+                        new Cell().add(new Paragraph(p.getStockMinimo() + " " + p.getUnidadMedida()).setFontSize(8))
+                                .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(new Cell().add(new Paragraph("S/ " + p.getPrecioUnitario()).setFontSize(8))
+                        .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(new Cell()
+                        .add(new Paragraph(p.getFechaVencimiento() != null ? p.getFechaVencimiento().toString() : "")
+                                .setFontSize(8))
+                        .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+                table.addCell(
+                        new Cell().add(new Paragraph(p.getUbicacion() != null ? p.getUbicacion() : "").setFontSize(8))
+                                .setBorder(new com.itextpdf.layout.borders.SolidBorder(1)));
+            }
+            document.add(table);
+
+            // Resumen al final
+            document.add(new Paragraph("\n"));
+            BigDecimal valorTotal = inventoryService.getTotalInventoryValue();
+            document.add(new Paragraph("Total de productos: " + productos.size()).setFontSize(10));
+            document.add(new Paragraph("Valor total del inventario: S/ " + valorTotal).setFontSize(10).setBold());
+        }
+
+        document.close();
+    }
+
     // Reportes de asistencia
     @GetMapping("/admin/reportes/asistencia")
     public String reportesAsistencia(
@@ -253,7 +505,9 @@ public class AdminController {
         }
         if (empleadoId != null && desde != null && hasta != null) {
             User empleado = userRepository.findById(empleadoId).orElse(null);
-            asistencias = (empleado != null) ? attendanceRepository.findAllByEmpleadoAndFechaBetween(empleado, desde, hasta) : java.util.Collections.emptyList();
+            asistencias = (empleado != null)
+                    ? attendanceRepository.findAllByEmpleadoAndFechaBetween(empleado, desde, hasta)
+                    : java.util.Collections.emptyList();
         } else if (desde != null && hasta != null) {
             asistencias = attendanceRepository.findAllByFechaBetween(desde, hasta);
         } else {
