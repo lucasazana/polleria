@@ -2,6 +2,7 @@ package com.polleria.polleria.config;
 
 import com.polleria.polleria.model.User;
 import com.polleria.polleria.repository.UserRepository;
+import com.polleria.polleria.service.InventoryService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,17 +15,21 @@ public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final InventoryService inventoryService;
 
     @Value("${app.admin.password:}")
     private String adminPassword;
 
-    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder,
+            InventoryService inventoryService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.inventoryService = inventoryService;
     }
 
     @Override
     public void run(String... args) throws Exception {
+        // Crear usuario admin si no existe
         if (userRepository.findByUsername("admin").isEmpty()) {
             String raw = adminPassword;
             if (raw == null || raw.isBlank()) {
@@ -39,6 +44,9 @@ public class DataInitializer implements CommandLineRunner {
             admin.setActive(true);
             userRepository.save(admin);
         }
+
+        // Inicializar categorías por defecto
+        inventoryService.initializeDefaultCategories();
     }
 
     private String generateRandomPassword(int length) {
